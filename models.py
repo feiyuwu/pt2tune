@@ -33,6 +33,3 @@ class TinyMLP(nn.Module):
 
     def forward(self, x):
         return self.fc2(torch.relu(self.fc1(x)))
-
-class
-
