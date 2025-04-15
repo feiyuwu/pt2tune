@@ -5,7 +5,7 @@ from typing import Callable
 from adaptive_compile import adaptive_compile, default_threshold_fn
 from transformers import AutoModel, AutoTokenizer
 
-def benchmark(fn: Callable, x: torch.Tensor, n: int = 1000):
+def benchmark(fn: Callable, x: torch.Tensor, n: int = 10):
     torch.cuda.empty_cache()
     times = []
     with torch.no_grad():
@@ -56,9 +56,10 @@ def run_benchmarks():
         # for backend in backends:
         model_pt = AutoModel.from_pretrained(model_name)
         model_pt.eval()
-        eager_time = benchmark(model_pt, dummy_inputs)
-        compiled_time = benchmark(torch.compile(model_pt), dummy_inputs)
-        adaptive_time = benchmark(adaptive_compile(model_pt, default_threshold_fn), dummy_inputs)
+        eager_time = benchmark(lambda inputs: model_pt(**inputs), dummy_inputs)
+        compiled_time = benchmark(lambda inputs: torch.compile(model_pt)(**inputs), dummy_inputs)
+        adaptive_time = benchmark(lambda inputs: adaptive_compile(model_pt, default_threshold_fn)(**inputs), dummy_inputs)
+
 
         print(f"Eager:    {eager_time:.6f}s")
         print(f"Compiled: {compiled_time:.6f}s")
