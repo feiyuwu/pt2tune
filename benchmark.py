@@ -58,7 +58,7 @@ def run_benchmarks():
         model_pt.eval()
         eager_time = benchmark(lambda inputs: model_pt(**inputs), dummy_inputs)
         compiled_time = benchmark(lambda inputs: torch.compile(model_pt)(**inputs), dummy_inputs)
-        adaptive_time = benchmark(lambda inputs: adaptive_compile(model_pt, default_threshold_fn)(**inputs), dummy_inputs)
+        adaptive_time = benchmark(lambda inputs: adaptive_compile(model_pt.forward, default_threshold_fn)(**inputs), dummy_inputs)
 
 
         print(f"Eager:    {eager_time:.6f}s")
